@@ -18,11 +18,6 @@
   </div>
   <div class="nav-right">
     <button id="cart-btn" onclick="toggleCart()">🛒 <span id="cart-count"></span></button>
-    <button id="auth-btn" onclick="openAuthModal('login')">Anmelden</button>
-    <div id="user-nav">
-      <div class="avatar" id="user-avatar" onclick="showPage('profile')"></div>
-      <button id="logout-btn" onclick="logout()">Abmelden</button>
-    </div>
   </div>
 </nav>
 
@@ -103,31 +98,6 @@
   </div>
 </div>
 
-<div class="modal-overlay" id="auth-modal">
-  <div class="modal">
-    <button class="modal-close" onclick="closeAuthModal()">✕</button>
-    <div id="login-form">
-      <h2>Willkommen zurück 👋</h2>
-      <p class="muted" style="margin-bottom:24px;">Melde dich mit deinem Konto an</p>
-      <div class="form-group"><label>E-Mail</label><input type="email" id="login-email" placeholder="deine@email.de"/></div>
-      <div class="form-group"><label>Passwort</label><input type="password" id="login-pw" placeholder="••••••••"/></div>
-      <div class="form-err" id="login-err">E-Mail oder Passwort falsch.</div>
-      <button class="btn-primary" onclick="doLogin()">Anmelden</button>
-      <div class="modal-switch">Noch kein Konto? <a onclick="openAuthModal('register')">Registrieren</a></div>
-    </div>
-    <div id="register-form" style="display:none;">
-      <h2>Konto erstellen ✨</h2>
-      <p class="muted" style="margin-bottom:24px;">Tritt OnlyShop bei</p>
-      <div class="form-group"><label>Name</label><input type="text" id="reg-name" placeholder="Max Mustermann"/></div>
-      <div class="form-group"><label>E-Mail</label><input type="email" id="reg-email" placeholder="deine@email.de"/></div>
-      <div class="form-group"><label>Passwort</label><input type="password" id="reg-pw" placeholder="Mindestens 6 Zeichen"/></div>
-      <div class="form-err" id="reg-err">Bitte füll alle Felder aus.</div>
-      <button class="btn-primary" onclick="doRegister()">Registrieren</button>
-      <div class="modal-switch">Bereits ein Konto? <a onclick="openAuthModal('login')">Anmelden</a></div>
-    </div>
-  </div>
-</div>
-
 <div class="modal-overlay" id="admin-code-modal">
   <div class="modal" style="max-width:360px;text-align:center;">
     <button class="modal-close" onclick="document.getElementById('admin-code-modal').classList.remove('open')">✕</button>
@@ -153,6 +123,16 @@
 <div id="cart-overlay" onclick="toggleCart()"></div>
 
 <div id="toast"></div>
+
+<div class="modal-overlay" id="checkout-popup">
+  <div class="modal" style="max-width:420px;text-align:center;">
+    <button class="modal-close" onclick="closeCheckoutPopup()">✕</button>
+    <h2>Kauf abgeschlossen ✅</h2>
+    <p class="muted" style="margin:12px 0 24px;">Danke für deinen Einkauf! Für Updates und Support tritt bitte meinem Discord bei.</p>
+    <a id="discord-link" class="btn-primary" href="#" target="_blank" rel="noopener noreferrer">Discord beitreten</a>
+    <p class="muted small" style="margin-top:12px;">Den Discord-Link kannst du später im Code eintragen.</p>
+  </div>
+</div>
 
 <script src="app.js"></script>
 </body>

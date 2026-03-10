@@ -17,7 +17,7 @@ body { background: var(--bg); color: var(--text); font-family: 'Segoe UI', syste
 
 .muted { color: var(--muted); }
 .small { font-size: 0.8rem; }
-.gradient-text { background: linear-gradient(135deg, var(--accent), var(--accent2)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+.gradient-text { background: linear-gradient(135deg, var(--accent), var(--accent2)); background-clip: text; -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
 
 nav {
   position: sticky; top: 0; z-index: 200;
@@ -26,7 +26,7 @@ nav {
   display: flex; align-items: center; justify-content: space-between;
   padding: 0 24px; height: var(--nav-h); gap: 16px;
 }
-.nav-logo { font-size: 1.4rem; font-weight: 900; background: linear-gradient(135deg, var(--accent), var(--accent2)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; white-space: nowrap; flex-shrink: 0; }
+.nav-logo { font-size: 1.4rem; font-weight: 900; background: linear-gradient(135deg, var(--accent), var(--accent2)); background-clip: text; -webkit-background-clip: text; -webkit-text-fill-color: transparent; white-space: nowrap; flex-shrink: 0; }
 .nav-links { display: flex; gap: 20px; align-items: center; }
 .nav-links a { color: var(--muted); text-decoration: none; font-size: 0.92rem; transition: color .2s; white-space: nowrap; }
 .nav-links a:hover { color: var(--text); }
@@ -35,12 +35,6 @@ nav {
 
 #cart-btn { background: none; border: 1px solid var(--border); color: var(--text); padding: 7px 14px; border-radius: 8px; cursor: pointer; font-size: 0.88rem; transition: all .2s; white-space: nowrap; }
 #cart-btn:hover { border-color: var(--accent); color: var(--accent); }
-#auth-btn { background: linear-gradient(135deg, var(--accent), var(--accent2)); border: none; color: #fff; padding: 7px 18px; border-radius: 8px; cursor: pointer; font-size: 0.88rem; font-weight: 600; transition: opacity .2s; white-space: nowrap; }
-#auth-btn:hover { opacity: 0.85; }
-#user-nav { display: none; align-items: center; gap: 10px; }
-#logout-btn { background: none; border: 1px solid var(--border); color: var(--muted); padding: 7px 12px; border-radius: 8px; cursor: pointer; font-size: 0.82rem; transition: all .2s; white-space: nowrap; }
-#logout-btn:hover { border-color: var(--accent); color: var(--accent); }
-.avatar { width: 36px; height: 36px; border-radius: 50%; background: linear-gradient(135deg, var(--accent), var(--accent2)); display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 0.9rem; cursor: pointer; flex-shrink: 0; }
 
 .page { display: none; }
 .page.active { display: block; }
@@ -50,7 +44,7 @@ nav {
   background: radial-gradient(ellipse at 50% 0%, rgba(233,30,140,0.15) 0%, transparent 70%);
 }
 #hero h1 { font-size: clamp(1.8rem, 5vw, 3rem); font-weight: 900; line-height: 1.15; }
-#hero h1 span { background: linear-gradient(135deg, var(--accent), var(--accent2)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+#hero h1 span { background: linear-gradient(135deg, var(--accent), var(--accent2)); background-clip: text; -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
 #hero p { color: var(--muted); font-size: clamp(0.9rem, 2.5vw, 1.1rem); margin: 14px auto 0; max-width: 460px; }
 
 .shop-controls { display: flex; flex-wrap: wrap; gap: 10px; padding: 24px 24px 20px; align-items: center; }
@@ -116,6 +110,7 @@ nav {
 .modal-close { position: absolute; top: 14px; right: 14px; background: none; border: none; color: var(--muted); font-size: 1.2rem; cursor: pointer; line-height: 1; padding: 4px; }
 .modal-switch { text-align: center; margin-top: 14px; font-size: 0.83rem; color: var(--muted); }
 .modal-switch a { color: var(--accent); cursor: pointer; }
+#checkout-popup .btn-primary { display: inline-block; text-decoration: none; }
 
 #cart-sidebar { position: fixed; right: -100%; top: 0; height: 100%; width: min(380px, 100vw); background: var(--surface); border-left: 1px solid var(--border); z-index: 400; transition: right .3s ease; display: flex; flex-direction: column; }
 #cart-sidebar.open { right: 0; }

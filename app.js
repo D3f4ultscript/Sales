@@ -1,6 +1,4 @@
 const ADMIN_CODE = "123";
-let users = JSON.parse(localStorage.getItem("os_users") || "[]");
-let currentUser = JSON.parse(localStorage.getItem("os_current") || "null");
 let products = JSON.parse(localStorage.getItem("os_products") || "[]");
 let cart = [];
 let currentFilter = "all";
@@ -109,78 +107,21 @@ function checkout() {
   cart = [];
   updateCartUI();
   toggleCart();
-  toast("✅ Bestellung aufgegeben!");
+  openCheckoutPopup();
 }
 
-function openAuthModal(mode) {
-  document.getElementById("auth-modal").classList.add("open");
-  document.getElementById("login-form").style.display = mode === "login" ? "block" : "none";
-  document.getElementById("register-form").style.display = mode === "register" ? "block" : "none";
-  document.getElementById("login-err").style.display = "none";
-  document.getElementById("reg-err").style.display = "none";
+function openCheckoutPopup() {
+  document.getElementById("checkout-popup").classList.add("open");
 }
 
-function closeAuthModal() {
-  document.getElementById("auth-modal").classList.remove("open");
-}
-
-function doLogin() {
-  const email = document.getElementById("login-email").value.trim();
-  const pw = document.getElementById("login-pw").value;
-  const u = users.find(x => x.email === email && x.pw === pw);
-  if (!u) { document.getElementById("login-err").style.display = "block"; return; }
-  currentUser = u;
-  localStorage.setItem("os_current", JSON.stringify(u));
-  closeAuthModal();
-  updateAuthUI();
-  toast(`👋 Willkommen, ${u.name}!`);
-}
-
-function doRegister() {
-  const name = document.getElementById("reg-name").value.trim();
-  const email = document.getElementById("reg-email").value.trim();
-  const pw = document.getElementById("reg-pw").value;
-  const err = document.getElementById("reg-err");
-  if (!name || !email || pw.length < 6) {
-    err.textContent = "Bitte füll alle Felder aus (Passwort mind. 6 Zeichen).";
-    err.style.display = "block";
-    return;
-  }
-  if (users.find(x => x.email === email)) {
-    err.textContent = "E-Mail bereits registriert.";
-    err.style.display = "block";
-    return;
-  }
-  const u = { name, email, pw };
-  users.push(u);
-  localStorage.setItem("os_users", JSON.stringify(users));
-  currentUser = u;
-  localStorage.setItem("os_current", JSON.stringify(u));
-  closeAuthModal();
-  updateAuthUI();
-  toast(`🎉 Willkommen bei OnlyShop, ${name}!`);
-}
-
-function logout() {
-  currentUser = null;
-  localStorage.removeItem("os_current");
-  updateAuthUI();
-  showPage("shop");
-  toast("Abgemeldet.");
-}
-
-function updateAuthUI() {
-  const loggedIn = !!currentUser;
-  document.getElementById("auth-btn").style.display = loggedIn ? "none" : "block";
-  document.getElementById("user-nav").style.display = loggedIn ? "flex" : "none";
-  if (loggedIn) document.getElementById("user-avatar").textContent = currentUser.name[0].toUpperCase();
+function closeCheckoutPopup() {
+  document.getElementById("checkout-popup").classList.remove("open");
 }
 
 function updateProfileUI() {
-  if (!currentUser) return;
-  document.getElementById("profile-name-display").textContent = currentUser.name;
-  document.getElementById("profile-email-display").textContent = currentUser.email;
-  document.getElementById("profile-avatar-big").textContent = currentUser.name[0].toUpperCase();
+  document.getElementById("profile-name-display").textContent = "Gast";
+  document.getElementById("profile-email-display").textContent = "Login deaktiviert";
+  document.getElementById("profile-avatar-big").textContent = "G";
 }
 
 function openAdminCodeModal() {
@@ -260,6 +201,5 @@ function toast(msg) {
   setTimeout(() => t.classList.remove("show"), 2500);
 }
 
-updateAuthUI();
 renderProducts();
 updateCartUI();
