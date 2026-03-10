@@ -104,10 +104,15 @@ function toggleCart() {
 
 function checkout() {
   if (cart.length === 0) return;
-  cart = [];
-  updateCartUI();
+  // Warenkorb wird nicht mehr geleert
   toggleCart();
   openCheckoutPopup();
+}
+
+function loginWithDiscord() {
+  toast("Discord-Login: Bitte trage deine ClientID in den Code ein.");
+  // Hier würde die Discord OAuth2 Logik starten
+  // window.location.href = `https://discord.com/api/oauth2/authorize?client_id=DEINE_ID&...`;
 }
 
 function openCheckoutPopup() {
