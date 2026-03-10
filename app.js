@@ -201,5 +201,16 @@ function toast(msg) {
   setTimeout(() => t.classList.remove("show"), 2500);
 }
 
+// Admin Routing via URL hash
+function handleRouting() {
+  const hash = window.location.hash;
+  if (hash === "#/admin" || hash === "#admin") {
+    openAdminCodeModal();
+  }
+}
+
+window.addEventListener("hashchange", handleRouting);
+window.addEventListener("load", handleRouting);
+
 renderProducts();
 updateCartUI();
