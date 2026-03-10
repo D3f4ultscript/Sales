@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>OnlyShop</title>
+<link rel="stylesheet" href="style.css"/>
+</head>
+<body>
+
+<nav>
+  <div class="nav-logo">OnlyShop</div>
+  <button class="nav-burger" id="nav-burger" onclick="toggleMobileMenu()">☰</button>
+  <div class="nav-links" id="nav-links">
+    <a href="#" onclick="showPage('shop');closeMobileMenu()">Shop</a>
+    <a href="#" onclick="showPage('shop');closeMobileMenu()">Deals</a>
+    <a href="#" onclick="showPage('shop');closeMobileMenu()">Neu</a>
+  </div>
+  <div class="nav-right">
+    <button id="cart-btn" onclick="toggleCart()">🛒 <span id="cart-count"></span></button>
+    <button id="auth-btn" onclick="openAuthModal('login')">Anmelden</button>
+    <div id="user-nav">
+      <div class="avatar" id="user-avatar" onclick="showPage('profile')"></div>
+      <button id="logout-btn" onclick="logout()">Abmelden</button>
+    </div>
+  </div>
+</nav>
+
+<div id="shop-page" class="page active">
+  <div id="hero">
+    <h1>Dein Premium<br/><span>Only Shop</span></h1>
+    <p>Exklusive Produkte, erstklassige Qualität – direkt zu dir.</p>
+  </div>
+  <div class="shop-controls">
+    <div class="search-wrap">
+      <span class="si">🔍</span>
+      <input type="text" id="search-input" placeholder="Produkte suchen..." oninput="renderProducts()"/>
+    </div>
+    <div class="filter-group" id="filter-group">
+      <button class="filter-btn active" onclick="setFilter(this,'all')">Alle</button>
+      <button class="filter-btn" onclick="setFilter(this,'digital')">Digital</button>
+      <button class="filter-btn" onclick="setFilter(this,'physical')">Physisch</button>
+      <button class="filter-btn" onclick="setFilter(this,'premium')">Premium</button>
+    </div>
+    <select class="sort-select" id="sort-select" onchange="renderProducts()">
+      <option value="default">Sortieren</option>
+      <option value="price-asc">Preis ↑</option>
+      <option value="price-desc">Preis ↓</option>
+      <option value="name-asc">Name A–Z</option>
+      <option value="name-desc">Name Z–A</option>
+    </select>
+  </div>
+  <div class="products-grid" id="products-grid"></div>
+</div>
+
+<div id="profile-page" class="page">
+  <div class="profile-header">
+    <div class="profile-avatar" id="profile-avatar-big"></div>
+    <div class="profile-info">
+      <h2 id="profile-name-display"></h2>
+      <p id="profile-email-display"></p>
+      <p class="muted small">Mitglied seit heute</p>
+    </div>
+  </div>
+  <div class="profile-section">
+    <h3>Meine Bestellungen</h3>
+    <div class="order-empty">Noch keine Bestellungen vorhanden.</div>
+  </div>
+  <div class="admin-btn-wrap">
+    <button class="admin-btn" onclick="openAdminCodeModal()">Administration</button>
+  </div>
+</div>
+
+<div id="admin-page" class="page">
+  <h2>⚙️ Administration</h2>
+  <p class="muted" style="margin-bottom:32px;">Produkte verwalten und neue hinzufügen</p>
+  <div class="admin-form">
+    <h3>➕ Neues Produkt</h3>
+    <div class="form-row">
+      <div class="form-group"><label>Produktname</label><input type="text" id="admin-name" placeholder="z. B. Premium Pack"/></div>
+      <div class="form-group"><label>Preis (€)</label><input type="number" id="admin-price" placeholder="19.99" min="0" step="0.01"/></div>
+    </div>
+    <div class="form-row">
+      <div class="form-group">
+        <label>Kategorie</label>
+        <select id="admin-cat" class="sort-select" style="width:100%;padding:10px 14px;">
+          <option value="digital">Digital</option>
+          <option value="physical">Physisch</option>
+          <option value="premium">Premium</option>
+        </select>
+      </div>
+      <div class="form-group"><label>Emoji</label><input type="text" id="admin-emoji" placeholder="🎁" maxlength="2"/></div>
+    </div>
+    <div class="form-group"><label>Beschreibung</label><input type="text" id="admin-desc" placeholder="Kurze Produktbeschreibung..."/></div>
+    <button class="btn-primary" style="width:auto;padding:10px 32px;" onclick="addProduct()">Hinzufügen</button>
+  </div>
+  <div class="profile-section">
+    <h3>Alle Produkte (<span id="admin-count">0</span>)</h3>
+    <div class="admin-products-list" id="admin-products-list"></div>
+  </div>
+  <div style="margin-top:40px;text-align:center;">
+    <button class="admin-btn" onclick="showPage('shop')">← Zurück zum Shop</button>
+  </div>
+</div>
+
+<div class="modal-overlay" id="auth-modal">
+  <div class="modal">
+    <button class="modal-close" onclick="closeAuthModal()">✕</button>
+    <div id="login-form">
+      <h2>Willkommen zurück 👋</h2>
+      <p class="muted" style="margin-bottom:24px;">Melde dich mit deinem Konto an</p>
+      <div class="form-group"><label>E-Mail</label><input type="email" id="login-email" placeholder="deine@email.de"/></div>
+      <div class="form-group"><label>Passwort</label><input type="password" id="login-pw" placeholder="••••••••"/></div>
+      <div class="form-err" id="login-err">E-Mail oder Passwort falsch.</div>
+      <button class="btn-primary" onclick="doLogin()">Anmelden</button>
+      <div class="modal-switch">Noch kein Konto? <a onclick="openAuthModal('register')">Registrieren</a></div>
+    </div>
+    <div id="register-form" style="display:none;">
+      <h2>Konto erstellen ✨</h2>
+      <p class="muted" style="margin-bottom:24px;">Tritt OnlyShop bei</p>
+      <div class="form-group"><label>Name</label><input type="text" id="reg-name" placeholder="Max Mustermann"/></div>
+      <div class="form-group"><label>E-Mail</label><input type="email" id="reg-email" placeholder="deine@email.de"/></div>
+      <div class="form-group"><label>Passwort</label><input type="password" id="reg-pw" placeholder="Mindestens 6 Zeichen"/></div>
+      <div class="form-err" id="reg-err">Bitte füll alle Felder aus.</div>
+      <button class="btn-primary" onclick="doRegister()">Registrieren</button>
+      <div class="modal-switch">Bereits ein Konto? <a onclick="openAuthModal('login')">Anmelden</a></div>
+    </div>
+  </div>
+</div>
+
+<div class="modal-overlay" id="admin-code-modal">
+  <div class="modal" style="max-width:360px;text-align:center;">
+    <button class="modal-close" onclick="document.getElementById('admin-code-modal').classList.remove('open')">✕</button>
+    <h2 class="gradient-text">Administration</h2>
+    <p class="muted" style="margin-bottom:24px;">Gib den Admin-Code ein um fortzufahren</p>
+    <div class="form-group" style="text-align:left;"><label>Admin Code</label><input type="password" id="admin-code-input" placeholder="••••••" onkeydown="if(event.key==='Enter')verifyAdminCode()"/></div>
+    <div class="form-err" id="admin-code-err" style="display:block;opacity:0;margin-bottom:12px;">Falscher Code.</div>
+    <button class="btn-primary" onclick="verifyAdminCode()">Bestätigen</button>
+  </div>
+</div>
+
+<div id="cart-sidebar">
+  <div class="cart-header">
+    <h3>🛒 Warenkorb</h3>
+    <button class="cart-close" onclick="toggleCart()">✕</button>
+  </div>
+  <div class="cart-items" id="cart-items"></div>
+  <div class="cart-footer">
+    <div class="cart-total"><span>Gesamt</span><span id="cart-total-price">€0.00</span></div>
+    <button class="btn-primary" onclick="checkout()">Zur Kasse</button>
+  </div>
+</div>
+<div id="cart-overlay" onclick="toggleCart()"></div>
+
+<div id="toast"></div>
+
+<script src="app.js"></script>
+</body>
+</html>
