@@ -1,6 +1,6 @@
 const ADMIN_CODE = "123";
 // Discord Configuration
-const DISCORD_CLIENT_ID = "YOUR_CLIENT_ID"; // Replace with your App Client ID
+const DISCORD_CLIENT_ID = "972533051173240875"; // Replace with your App Client ID
 const DISCORD_REDIRECT_URI = window.location.origin + window.location.pathname;
 
 let products = JSON.parse(localStorage.getItem("os_products") || "[]");
