@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="de">
+<html lang="en">
 <head>
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
@@ -14,37 +14,37 @@
   <div class="nav-links" id="nav-links">
     <a href="#" onclick="showPage('shop');closeMobileMenu()">Shop</a>
     <a href="#" onclick="showPage('shop');closeMobileMenu()">Deals</a>
-    <a href="#" onclick="showPage('shop');closeMobileMenu()">Neu</a>
+    <a href="#" onclick="showPage('shop');closeMobileMenu()">New</a>
   </div>
   <div class="nav-right">
     <button id="cart-btn" onclick="toggleCart()">🛒 <span id="cart-count"></span></button>
     <button id="discord-login-btn" class="discord-btn" onclick="loginWithDiscord()">
       <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M20.317 4.37a19.791 19.791 0 0 0-4.885-1.515.074.074 0 0 0-.079.037c-.21.375-.444.864-.608 1.25a18.27 18.27 0 0 0-5.487 0 12.64 12.64 0 0 0-.617-1.25.077.077 0 0 0-.079-.037 19.736 19.736 0 0 0-4.885 1.515.069.069 0 0 0-.032.027C.533 9.048-.32 13.58.099 18.057a.082.082 0 0 0 .031.057 19.9 19.9 0 0 0 5.993 3.03.078.078 0 0 0 .084-.028 14.09 14.09 0 0 0 1.226-1.994.076.076 0 0 0-.041-.106 13.107 13.107 0 0 1-1.872-.892.077.077 0 0 1-.008-.128 10.2 10.2 0 0 0 .372-.292.074.074 0 0 1 .077-.01c3.928 1.793 8.18 1.793 12.062 0a.074.074 0 0 1 .078.01c.12.098.246.198.373.292a.077.077 0 0 1-.006.127 12.299 12.299 0 0 1-1.873.892.077.077 0 0 0-.041.107c.36.698.772 1.362 1.225 1.993a.076.076 0 0 0 .084.028 19.839 19.839 0 0 0 6.002-3.03.077.077 0 0 0 .032-.054c.5-5.177-.838-9.674-3.549-13.66a.061.061 0 0 0-.031-.03zM8.02 15.33c-1.183 0-2.157-1.085-2.157-2.419 0-1.333.955-2.419 2.157-2.419 1.21 0 2.176 1.096 2.157 2.42 0 1.333-.956 2.418-2.157 2.418zm7.975 0c-1.183 0-2.157-1.085-2.157-2.419 0-1.333.955-2.419 2.157-2.419 1.21 0 2.176 1.096 2.157 2.42 0 1.333-.946 2.418-2.157 2.418z"/></svg>
-      Mit Discord verbinden
+      <span id="discord-user-name">Connect with Discord</span>
     </button>
   </div>
 </nav>
 
 <div id="shop-page" class="page active">
   <div id="hero">
-    <h1>Dein Premium<br/><span>Only Shop</span></h1>
-    <p>Exklusive Produkte, erstklassige Qualität – direkt zu dir.</p>
+    <h1>Your Premium<br/><span>Only Shop</span></h1>
+    <p>Exclusive products, first-class quality – direct to you.</p>
   </div>
   <div class="shop-controls">
     <div class="search-wrap">
       <span class="si">🔍</span>
-      <input type="text" id="search-input" placeholder="Produkte suchen..." oninput="renderProducts()"/>
+      <input type="text" id="search-input" placeholder="Search products..." oninput="renderProducts()"/>
     </div>
     <div class="filter-group" id="filter-group">
-      <button class="filter-btn active" onclick="setFilter(this,'all')">Alle</button>
+      <button class="filter-btn active" onclick="setFilter(this,'all')">All</button>
       <button class="filter-btn" onclick="setFilter(this,'digital')">Digital</button>
-      <button class="filter-btn" onclick="setFilter(this,'physical')">Physisch</button>
+      <button class="filter-btn" onclick="setFilter(this,'physical')">Physical</button>
       <button class="filter-btn" onclick="setFilter(this,'premium')">Premium</button>
     </div>
     <select class="sort-select" id="sort-select" onchange="renderProducts()">
-      <option value="default">Sortieren</option>
-      <option value="price-asc">Preis ↑</option>
-      <option value="price-desc">Preis ↓</option>
+      <option value="default">Sort</option>
+      <option value="price-asc">Price ↑</option>
+      <option value="price-desc">Price ↓</option>
       <option value="name-asc">Name A–Z</option>
       <option value="name-desc">Name Z–A</option>
     </select>
@@ -58,44 +58,44 @@
     <div class="profile-info">
       <h2 id="profile-name-display"></h2>
       <p id="profile-email-display"></p>
-      <p class="muted small">Mitglied seit heute</p>
+      <p class="muted small">Member since today</p>
     </div>
   </div>
   <div class="profile-section">
-    <h3>Meine Bestellungen</h3>
-    <div class="order-empty">Noch keine Bestellungen vorhanden.</div>
+    <h3>My Orders</h3>
+    <div class="order-empty">No orders found.</div>
   </div>
 </div>
 
 <div id="admin-page" class="page">
   <h2>⚙️ Administration</h2>
-  <p class="muted" style="margin-bottom:32px;">Produkte verwalten und neue hinzufügen</p>
+  <p class="muted" style="margin-bottom:32px;">Manage products and add new ones</p>
   <div class="admin-form">
-    <h3>➕ Neues Produkt</h3>
+    <h3>➕ New Product</h3>
     <div class="form-row">
-      <div class="form-group"><label>Produktname</label><input type="text" id="admin-name" placeholder="z. B. Premium Pack"/></div>
-      <div class="form-group"><label>Preis (€)</label><input type="number" id="admin-price" placeholder="19.99" min="0" step="0.01"/></div>
+      <div class="form-group"><label>Product Name</label><input type="text" id="admin-name" placeholder="e.g. Premium Pack"/></div>
+      <div class="form-group"><label>Price ($)</label><input type="number" id="admin-price" placeholder="19.99" min="0" step="0.01"/></div>
     </div>
     <div class="form-row">
       <div class="form-group">
-        <label>Kategorie</label>
+        <label>Category</label>
         <select id="admin-cat" class="sort-select" style="width:100%;padding:10px 14px;">
           <option value="digital">Digital</option>
-          <option value="physical">Physisch</option>
+          <option value="physical">Physical</option>
           <option value="premium">Premium</option>
         </select>
       </div>
       <div class="form-group"><label>Emoji</label><input type="text" id="admin-emoji" placeholder="🎁" maxlength="2"/></div>
     </div>
-    <div class="form-group"><label>Beschreibung</label><input type="text" id="admin-desc" placeholder="Kurze Produktbeschreibung..."/></div>
-    <button class="btn-primary" style="width:auto;padding:10px 32px;" onclick="addProduct()">Hinzufügen</button>
+    <div class="form-group"><label>Description</label><input type="text" id="admin-desc" placeholder="Short description..."/></div>
+    <button class="btn-primary" style="width:auto;padding:10px 32px;" onclick="addProduct()">Add Product</button>
   </div>
   <div class="profile-section">
-    <h3>Alle Produkte (<span id="admin-count">0</span>)</h3>
+    <h3>All Products (<span id="admin-count">0</span>)</h3>
     <div class="admin-products-list" id="admin-products-list"></div>
   </div>
   <div style="margin-top:40px;text-align:center;">
-    <button class="admin-btn" onclick="showPage('shop')">← Zurück zum Shop</button>
+    <button class="admin-btn" onclick="showPage('shop')">← Back to Shop</button>
   </div>
 </div>
 
@@ -103,22 +103,22 @@
   <div class="modal" style="max-width:360px;text-align:center;">
     <button class="modal-close" onclick="document.getElementById('admin-code-modal').classList.remove('open')">✕</button>
     <h2 class="gradient-text">Administration</h2>
-    <p class="muted" style="margin-bottom:24px;">Gib den Admin-Code ein um fortzufahren</p>
+    <p class="muted" style="margin-bottom:24px;">Enter Admin Code to continue</p>
     <div class="form-group" style="text-align:left;"><label>Admin Code</label><input type="password" id="admin-code-input" placeholder="••••••" onkeydown="if(event.key==='Enter')verifyAdminCode()"/></div>
-    <div class="form-err" id="admin-code-err" style="display:block;opacity:0;margin-bottom:12px;">Falscher Code.</div>
-    <button class="btn-primary" onclick="verifyAdminCode()">Bestätigen</button>
+    <div class="form-err" id="admin-code-err" style="display:block;opacity:0;margin-bottom:12px;">Wrong code.</div>
+    <button class="btn-primary" onclick="verifyAdminCode()">Confirm</button>
   </div>
 </div>
 
 <div id="cart-sidebar">
   <div class="cart-header">
-    <h3>🛒 Warenkorb</h3>
+    <h3>🛒 Shopping Cart</h3>
     <button class="cart-close" onclick="toggleCart()">✕</button>
   </div>
   <div class="cart-items" id="cart-items"></div>
   <div class="cart-footer">
-    <div class="cart-total"><span>Gesamt</span><span id="cart-total-price">€0.00</span></div>
-    <button class="btn-primary" onclick="checkout()">Zur Kasse</button>
+    <div class="cart-total"><span>Total</span><span id="cart-total-price">$0.00</span></div>
+    <button class="btn-primary" onclick="checkout()">Checkout</button>
   </div>
 </div>
 <div id="cart-overlay" onclick="toggleCart()"></div>
@@ -128,10 +128,10 @@
 <div class="modal-overlay" id="checkout-popup">
   <div class="modal" style="max-width:420px;text-align:center;">
     <button class="modal-close" onclick="closeCheckoutPopup()">✕</button>
-    <h2>Fast fertig! 🚀</h2>
-    <p class="muted" style="margin:12px 0 24px;">Um den Kauf abzuschließen, tritt bitte meinem Discord bei. Dort erhältst du alle weiteren Zahlungs- und Produktinformationen.</p>
-    <a id="discord-link" class="btn-primary" href="#" target="_blank" rel="noopener noreferrer">Auf Discord kaufen</a>
-    <p class="muted small" style="margin-top:12px;">Dein Warenkorb bleibt gespeichert.</p>
+    <h2>Almost there! 🚀</h2>
+    <p class="muted" style="margin:12px 0 24px;">To complete your purchase, please join my Discord. You will find all payment and product info there.</p>
+    <a id="discord-link" class="btn-primary" href="#" target="_blank" rel="noopener noreferrer">Buy on Discord</a>
+    <p class="muted small" style="margin-top:12px;">Your cart is saved.</p>
   </div>
 </div>
 

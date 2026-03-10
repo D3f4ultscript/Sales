@@ -1,5 +1,10 @@
 const ADMIN_CODE = "123";
+// Discord Configuration
+const DISCORD_CLIENT_ID = "YOUR_CLIENT_ID"; // Replace with your App Client ID
+const DISCORD_REDIRECT_URI = window.location.origin + window.location.pathname;
+
 let products = JSON.parse(localStorage.getItem("os_products") || "[]");
+let currentUser = JSON.parse(localStorage.getItem("os_discord_user") || "null");
 let cart = [];
 let currentFilter = "all";
 
@@ -42,8 +47,8 @@ function renderProducts() {
   const grid = document.getElementById("products-grid");
   if (list.length === 0) {
     grid.innerHTML = products.length === 0
-      ? '<div class="no-products">🛍️<br/><br/>Noch keine Produkte vorhanden.<br/>Füge welche über die Administration hinzu.</div>'
-      : '<div class="no-products">Keine Produkte gefunden.</div>';
+      ? '<div class="no-products">🛍️<br/><br/>No products available.<br/>Add some via administration.</div>'
+      : '<div class="no-products">No products found.</div>';
     return;
   }
   grid.innerHTML = list.map(p => `
@@ -54,8 +59,8 @@ function renderProducts() {
         <div class="product-name">${p.name}</div>
         <div class="product-desc">${p.desc}</div>
         <div class="product-footer">
-          <span class="product-price">€${p.price.toFixed(2)}</span>
-          <button class="add-cart-btn" onclick="addToCart(${p.id})">+ Warenkorb</button>
+          <span class="product-price">$${p.price.toFixed(2)}</span>
+          <button class="add-cart-btn" onclick="addToCart(${p.id})">+ Cart</button>
         </div>
       </div>
     </div>`).join("");
@@ -68,7 +73,7 @@ function addToCart(id) {
   if (ex) ex.qty++;
   else cart.push({ ...p, qty: 1 });
   updateCartUI();
-  toast(`${p.emoji} ${p.name} hinzugefügt`);
+  toast(`${p.emoji} ${p.name} added`);
 }
 
 function removeFromCart(id) {
@@ -80,10 +85,10 @@ function updateCartUI() {
   const count = cart.reduce((a, b) => a + b.qty, 0);
   document.getElementById("cart-count").textContent = count > 0 ? `(${count})` : "";
   const total = cart.reduce((a, b) => a + b.price * b.qty, 0);
-  document.getElementById("cart-total-price").textContent = `€${total.toFixed(2)}`;
+  document.getElementById("cart-total-price").textContent = `$${total.toFixed(2)}`;
   const ci = document.getElementById("cart-items");
   if (cart.length === 0) {
-    ci.innerHTML = '<div class="cart-empty">Dein Warenkorb ist leer.</div>';
+    ci.innerHTML = '<div class="cart-empty">Your cart is empty.</div>';
     return;
   }
   ci.innerHTML = cart.map(x => `
@@ -91,7 +96,7 @@ function updateCartUI() {
       <span class="cart-item-emoji">${x.emoji}</span>
       <div class="cart-item-info">
         <div class="name">${x.name}${x.qty > 1 ? ` x${x.qty}` : ""}</div>
-        <div class="price">€${(x.price * x.qty).toFixed(2)}</div>
+        <div class="price">$${(x.price * x.qty).toFixed(2)}</div>
       </div>
       <button class="cart-item-remove" onclick="removeFromCart(${x.id})">✕</button>
     </div>`).join("");
@@ -104,15 +109,50 @@ function toggleCart() {
 
 function checkout() {
   if (cart.length === 0) return;
-  // Warenkorb wird nicht mehr geleert
+  // Cart is NOT cleared anymore
   toggleCart();
   openCheckoutPopup();
 }
 
 function loginWithDiscord() {
-  toast("Discord-Login: Bitte trage deine ClientID in den Code ein.");
-  // Hier würde die Discord OAuth2 Logik starten
-  // window.location.href = `https://discord.com/api/oauth2/authorize?client_id=DEINE_ID&...`;
+  if (DISCORD_CLIENT_ID === "YOUR_CLIENT_ID") {
+    toast("Please set DISCORD_CLIENT_ID in app.js");
+    return;
+  }
+  const url = `https://discord.com/api/oauth2/authorize?client_id=${DISCORD_CLIENT_ID}&redirect_uri=${encodeURIComponent(DISCORD_REDIRECT_URI)}&response_type=token&scope=identify`;
+  window.location.href = url;
+}
+
+async function handleDiscordAuth() {
+  const fragment = new URLSearchParams(window.location.hash.slice(1));
+  const accessToken = fragment.get("access_token");
+
+  if (accessToken) {
+    try {
+      const response = await fetch('https://discord.com/api/users/@me', {
+        headers: { authorization: `Bearer ${accessToken}` }
+      });
+      const user = await response.json();
+      if (user.id) {
+        currentUser = user;
+        localStorage.setItem("os_discord_user", JSON.stringify(user));
+        history.replaceState(null, null, " ");
+        updateAuthUI();
+        toast(`Welcome, ${user.username}!`);
+      }
+    } catch (e) {
+      console.error(e);
+      toast("Discord Login failed.");
+    }
+  }
+}
+
+function updateAuthUI() {
+  const btn = document.getElementById("discord-user-name");
+  if (currentUser) {
+    btn.textContent = currentUser.username;
+    // Optional: Add avatar from https://cdn.discordapp.com/avatars/${currentUser.id}/${currentUser.avatar}.png
+  }
 }
 
 function openCheckoutPopup() {
@@ -124,9 +164,15 @@ function closeCheckoutPopup() {
 }
 
 function updateProfileUI() {
-  document.getElementById("profile-name-display").textContent = "Gast";
-  document.getElementById("profile-email-display").textContent = "Login deaktiviert";
-  document.getElementById("profile-avatar-big").textContent = "G";
+  if (!currentUser) {
+    document.getElementById("profile-name-display").textContent = "Guest";
+    document.getElementById("profile-email-display").textContent = "Not connected to Discord";
+    document.getElementById("profile-avatar-big").textContent = "?";
+    return;
+  }
+  document.getElementById("profile-name-display").textContent = currentUser.username;
+  document.getElementById("profile-email-display").textContent = `ID: ${currentUser.id}`;
+  document.getElementById("profile-avatar-big").textContent = currentUser.username[0].toUpperCase();
 }
 
 function openAdminCodeModal() {
@@ -156,7 +202,7 @@ function addProduct() {
   const emoji = document.getElementById("admin-emoji").value || "📦";
   const desc = document.getElementById("admin-desc").value.trim();
   if (!name || isNaN(price) || price < 0 || !desc) {
-    toast("⚠️ Bitte alle Felder ausfüllen.");
+    toast("⚠️ Please fill all fields.");
     return;
   }
   products.push({ id: Date.now(), name, price, cat, emoji, desc });
@@ -167,23 +213,23 @@ function addProduct() {
   document.getElementById("admin-price").value = "";
   document.getElementById("admin-emoji").value = "";
   document.getElementById("admin-desc").value = "";
-  toast(`✅ "${name}" hinzugefügt`);
+  toast(`✅ "${name}" added`);
 }
 
 function deleteProduct(id) {
-  if (!confirm("Produkt wirklich löschen?")) return;
+  if (!confirm("Really delete product?")) return;
   products = products.filter(p => p.id !== id);
   save();
   renderAdminProducts();
   renderProducts();
-  toast("🗑️ Produkt gelöscht");
+  toast("🗑️ Product deleted");
 }
 
 function renderAdminProducts() {
   document.getElementById("admin-count").textContent = products.length;
   const list = document.getElementById("admin-products-list");
   if (products.length === 0) {
-    list.innerHTML = '<div class="order-empty">Noch keine Produkte vorhanden.</div>';
+    list.innerHTML = '<div class="order-empty">No products found.</div>';
     return;
   }
   list.innerHTML = products.map(p => `
@@ -192,10 +238,10 @@ function renderAdminProducts() {
         <span style="font-size:1.6rem;">${p.emoji}</span>
         <div class="info-text">
           <span>${p.name}</span>
-          <span>€${p.price.toFixed(2)} · ${p.cat} · ${p.desc.substring(0, 45)}${p.desc.length > 45 ? "..." : ""}</span>
+          <span>$${p.price.toFixed(2)} · ${p.cat} · ${p.desc.substring(0, 45)}${p.desc.length > 45 ? "..." : ""}</span>
         </div>
       </div>
-      <button class="delete-btn" onclick="deleteProduct(${p.id})">Löschen</button>
+      <button class="delete-btn" onclick="deleteProduct(${p.id})">Delete</button>
     </div>`).join("");
 }
 
@@ -217,5 +263,7 @@ function handleRouting() {
 window.addEventListener("hashchange", handleRouting);
 window.addEventListener("load", handleRouting);
 
+handleDiscordAuth();
+updateAuthUI();
 renderProducts();
 updateCartUI();
