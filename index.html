@@ -3,19 +3,25 @@
 <head>
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-<title>OnlyShop</title>
+<title>D3f4ult Shop</title>
 <link rel="stylesheet" href="style.css"/>
+<script src="https://unpkg.com/lucide@latest"></script>
 </head>
 <body>
 
 <nav>
   <div class="nav-logo"><span class="accent-text">D3f4ult</span> Shop</div>
-  <button class="nav-burger" id="nav-burger" onclick="toggleMobileMenu()">☰</button>
+  <button class="nav-burger" id="nav-burger" onclick="toggleNav()">
+    <i data-lucide="menu"></i>
+  </button>
   <div class="nav-links" id="nav-links">
-    <a href="#" onclick="navigateTo('shop');hideNav()">Shop</a>
+    <a href="#" class="nav-item active" onclick="navigateTo('shop');hideNav()">Shop</a>
+    <a href="#" class="nav-item" onclick="navigateTo('infos');hideNav()">Infos</a>
   </div>
   <div class="nav-right">
-    <button id="cart-btn" onclick="toggleCartUI()">🛒 <span id="cart-count"></span></button>
+    <button id="cart-btn" onclick="toggleCartUI()">
+      <i data-lucide="shopping-cart"></i> <span id="cart-count"></span>
+    </button>
   </div>
 </nav>
 
@@ -26,22 +32,47 @@
   </div>
   <div class="shop-controls">
     <div class="search-wrap">
-      <span class="si">🔍</span>
+      <div class="si"><i data-lucide="search"></i></div>
       <input type="text" id="search-input" placeholder="Search products..." oninput="displayProducts()"/>
     </div>
     <div class="filter-group" id="filter-group">
       <button class="filter-btn active" onclick="updateFilter(this,'all')">All</button>
       <button class="filter-btn" onclick="updateFilter(this,'new')">New</button>
     </div>
-    <select class="sort-select" id="sort-select" onchange="displayProducts()">
-      <option value="default">Sort</option>
-      <option value="price-asc">Price ↑</option>
-      <option value="price-desc">Price ↓</option>
-      <option value="name-asc">Name A–Z</option>
-      <option value="name-desc">Name Z–A</option>
-    </select>
+    <div class="sort-select-wrap">
+      <i data-lucide="filter" class="sort-icon-overlay"></i>
+      <select class="sort-select" id="sort-select" onchange="displayProducts()">
+        <option value="default">Sort</option>
+        <option value="price-asc">Price ↑</option>
+        <option value="price-desc">Price ↓</option>
+        <option value="name-asc">Name A–Z</option>
+        <option value="name-desc">Name Z–A</option>
+      </select>
+    </div>
   </div>
   <div class="products-grid" id="products-grid"></div>
+</div>
+
+<div class="modal-overlay" id="product-modal">
+  <div class="modal" style="max-width:550px;">
+    <button class="modal-close" onclick="closeProductModal()">✕</button>
+    <div id="product-modal-content"></div>
+  </div>
+</div>
+
+<div id="infos-page" class="page">
+  <div class="info-container">
+    <h2 class="gradient-text">How it works</h2>
+    <div class="info-content">
+      <p>All purchases are handled through our <strong>Discord Server</strong>.</p>
+      <ul style="list-style: none; margin: 20px 0; padding: 0;">
+        <li style="margin-bottom: 20px;"><i data-lucide="eye" style="vertical-align: middle; margin-right: 10px; color: var(--accent);"></i> 1. Browse our products here and choose what you like.</li>
+        <li style="margin-bottom: 20px;"><i data-lucide="ticket" style="vertical-align: middle; margin-right: 10px; color: var(--accent);"></i> 2. Open a ticket on our Discord server to start the purchase.</li>
+        <li style="margin-bottom: 20px;"><i data-lucide="credit-card" style="vertical-align: middle; margin-right: 10px; color: var(--accent);"></i> 3. Our team will guide you through the payment and delivery process.</li>
+      </ul>
+      <p class="muted">Fast, secure and direct – that's how we roll.</p>
+    </div>
+  </div>
 </div>
 
 <div id="profile-page" class="page">
@@ -60,34 +91,46 @@
 </div>
 
 <div id="admin-page" class="page">
-  <h2>⚙️ Administration</h2>
+  <h2><i data-lucide="settings" style="vertical-align: middle;"></i> Administration</h2>
   <p class="muted" style="margin-bottom:32px;">Manage products and add new ones</p>
   <div class="admin-form">
-    <h3>➕ New Product</h3>
+    <h3><i data-lucide="plus-circle" style="vertical-align: middle;"></i> New Product</h3>
     <div class="form-row">
       <div class="form-group"><label>Product Name</label><input type="text" id="admin-name" placeholder="e.g. Premium Pack"/></div>
-      <div class="form-group"><label>Price ($)</label><input type="number" id="admin-price" placeholder="19.99" min="0" step="0.01"/></div>
+      <div class="form-group"><label>Price</label><input type="number" id="admin-price" placeholder="19.99" min="0" step="0.01"/></div>
     </div>
     <div class="form-row">
       <div class="form-group">
-        <label>Category</label>
-        <select id="admin-cat" class="sort-select" style="width:100%;padding:10px 14px;">
-          <option value="digital">Digital</option>
-          <option value="physical">Physical</option>
-          <option value="premium">Premium</option>
+        <label>Currency</label>
+        <select id="admin-currency" class="sort-select" style="width:100%;padding:10px 14px;">
+          <option value="$">US Dollar ($)</option>
+          <option value="€">Euro (€)</option>
         </select>
       </div>
-      <div class="form-group"><label>Emoji</label><input type="text" id="admin-emoji" placeholder="🎁" maxlength="2"/></div>
+      <div class="form-group">
+        <label>Icon Group</label>
+        <select id="admin-emoji" class="sort-select" style="width:100%;padding:10px 14px;">
+          <option value="package">Package</option>
+          <option value="box">Box</option>
+          <option value="file-digit">Digital File</option>
+          <option value="hard-drive">Hardware</option>
+          <option value="star">Premium Star</option>
+          <option value="gift">Gift</option>
+          <option value="zap">Fast Delivery</option>
+        </select>
+      </div>
     </div>
     <div class="form-group"><label>Description</label><input type="text" id="admin-desc" placeholder="Short description..."/></div>
-    <button class="btn-primary" style="width:auto;padding:10px 32px;" onclick="createNewProduct()">Add Product</button>
+    <button class="btn-primary" style="width:auto;padding:12px 32px;" onclick="createNewProduct()">Add Product</button>
   </div>
   <div class="profile-section">
     <h3>All Products (<span id="admin-count">0</span>)</h3>
     <div class="admin-products-list" id="admin-products-list"></div>
   </div>
   <div style="margin-top:40px;text-align:center;">
-    <button class="admin-btn" onclick="navigateTo('shop')">← Back to Shop</button>
+    <button class="admin-btn" onclick="navigateTo('shop')">
+      <i data-lucide="arrow-left" style="width:14px;height:14px;vertical-align:middle;"></i> Back to Shop
+    </button>
   </div>
 </div>
 
@@ -104,7 +147,7 @@
 
 <div id="cart-sidebar">
   <div class="cart-header">
-    <h3>🛒 Shopping Cart</h3>
+    <h3><i data-lucide="shopping-bag" style="vertical-align: middle;"></i> Shopping Cart</h3>
     <button class="cart-close" onclick="toggleCartUI()">✕</button>
   </div>
   <div class="cart-items" id="cart-items"></div>
