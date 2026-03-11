@@ -1,269 +1,257 @@
 const ADMIN_CODE = "123";
-// Discord Configuration
-const DISCORD_CLIENT_ID = "972533051173240875"; // Replace with your App Client ID
-const DISCORD_REDIRECT_URI = window.location.origin + window.location.pathname;
 
-let products = JSON.parse(localStorage.getItem("os_products") || "[]");
-let currentUser = JSON.parse(localStorage.getItem("os_discord_user") || "null");
-let cart = [];
-let currentFilter = "all";
+let shoppingItems = JSON.parse(localStorage.getItem("items_data") || "[]");
+let userState = JSON.parse(localStorage.getItem("user_session") || "null");
+let userCart = [];
+let activeFilter = "all";
 
-function save() { localStorage.setItem("os_products", JSON.stringify(products)); }
+function persistData() { localStorage.setItem("items_data", JSON.stringify(shoppingItems)); }
 
-function showPage(p) {
-  document.querySelectorAll(".page").forEach(x => x.classList.remove("active"));
-  document.getElementById(p + "-page").classList.add("active");
-  window.scrollTo(0, 0);
-  if (p === "admin") renderAdminProducts();
-  if (p === "profile") updateProfileUI();
+function isItemRecent(item) {
+  if (!item.created_at) return false;
+  const timeNow = Date.now();
+  const timeDiff = timeNow - item.created_at;
+  return timeDiff < 86400000; 
 }
 
-function toggleMobileMenu() {
+function navigateTo(pageId) {
+  document.querySelectorAll(".page").forEach(el => el.classList.remove("active"));
+  document.getElementById(pageId + "-page").classList.add("active");
+  window.scrollTo(0, 0);
+  if (pageId === "admin") refreshAdminView();
+  if (pageId === "profile") refreshProfileView();
+}
+
+function toggleNav() {
   document.getElementById("nav-links").classList.toggle("open");
 }
-function closeMobileMenu() {
+function hideNav() {
   document.getElementById("nav-links").classList.remove("open");
 }
 
-function setFilter(el, cat) {
+function updateFilter(btn, category) {
   document.querySelectorAll(".filter-btn").forEach(b => b.classList.remove("active"));
-  el.classList.add("active");
-  currentFilter = cat;
-  renderProducts();
+  btn.classList.add("active");
+  activeFilter = category;
+  displayProducts();
 }
 
-function renderProducts() {
-  const q = document.getElementById("search-input").value.toLowerCase();
-  const sort = document.getElementById("sort-select").value;
-  let list = products.filter(p => {
-    const matchCat = currentFilter === "all" || p.cat === currentFilter;
-    const matchQ = p.name.toLowerCase().includes(q) || p.desc.toLowerCase().includes(q);
-    return matchCat && matchQ;
+function displayProducts() {
+  const searchTerm = document.getElementById("search-input").value.toLowerCase();
+  const sortOrder = document.getElementById("sort-select").value;
+  
+  let filteredList = shoppingItems.filter(item => {
+    let matchesCategory = false;
+    if (activeFilter === "all") {
+      matchesCategory = true;
+    } else if (activeFilter === "new") {
+      matchesCategory = isItemRecent(item);
+    } else {
+      matchesCategory = item.category === activeFilter;
+    }
+    const matchesSearch = item.title.toLowerCase().includes(searchTerm) || item.details.toLowerCase().includes(searchTerm);
+    return matchesCategory && matchesSearch;
   });
-  if (sort === "price-asc") list.sort((a, b) => a.price - b.price);
-  else if (sort === "price-desc") list.sort((a, b) => b.price - a.price);
-  else if (sort === "name-asc") list.sort((a, b) => a.name.localeCompare(b.name));
-  else if (sort === "name-desc") list.sort((a, b) => b.name.localeCompare(a.name));
-  const grid = document.getElementById("products-grid");
-  if (list.length === 0) {
-    grid.innerHTML = products.length === 0
-      ? '<div class="no-products">🛍️<br/><br/>No products available.<br/>Add some via administration.</div>'
-      : '<div class="no-products">No products found.</div>';
+
+  if (sortOrder === "price-asc") filteredList.sort((a, b) => a.amount - b.amount);
+  else if (sortOrder === "price-desc") filteredList.sort((a, b) => b.amount - a.amount);
+  else if (sortOrder === "name-asc") filteredList.sort((a, b) => a.title.localeCompare(b.title));
+  else if (sortOrder === "name-desc") filteredList.sort((a, b) => b.title.localeCompare(a.title));
+
+  const container = document.getElementById("products-grid");
+  if (filteredList.length === 0) {
+    container.innerHTML = shoppingItems.length === 0
+      ? '<div class="no-products">🛍️<br/><br/>No items available yet.</div>'
+      : '<div class="no-products">No matches found.</div>';
     return;
   }
-  grid.innerHTML = list.map(p => `
+
+  container.innerHTML = filteredList.map(item => `
     <div class="product-card">
-      <div class="product-img">${p.emoji}</div>
+      <div class="product-img">${item.icon}</div>
       <div class="product-body">
-        <span class="product-tag">${p.cat}</span>
-        <div class="product-name">${p.name}</div>
-        <div class="product-desc">${p.desc}</div>
+        <span class="product-tag">${item.category}${isItemRecent(item) ? ' <span style="color:var(--accent2); font-weight:bold;">[NEW]</span>' : ''}</span>
+        <div class="product-name">${item.title}</div>
+        <div class="product-desc">${item.details}</div>
         <div class="product-footer">
-          <span class="product-price">$${p.price.toFixed(2)}</span>
-          <button class="add-cart-btn" onclick="addToCart(${p.id})">+ Cart</button>
+          <span class="product-price">$${item.amount.toFixed(2)}</span>
+          <button class="add-cart-btn" onclick="addItemToCart(${item.id})">+ Cart</button>
         </div>
       </div>
     </div>`).join("");
 }
 
-function addToCart(id) {
-  const p = products.find(x => x.id === id);
-  if (!p) return;
-  const ex = cart.find(x => x.id === id);
-  if (ex) ex.qty++;
-  else cart.push({ ...p, qty: 1 });
-  updateCartUI();
-  toast(`${p.emoji} ${p.name} added`);
+function addItemToCart(id) {
+  const item = shoppingItems.find(i => i.id === id);
+  if (!item) return;
+  const existing = userCart.find(i => i.id === id);
+  if (existing) existing.count++;
+  else userCart.push({ ...item, count: 1 });
+  refreshCartView();
+  showMessage(`${item.icon} ${item.title} added to cart`);
 }
 
-function removeFromCart(id) {
-  cart = cart.filter(x => x.id !== id);
-  updateCartUI();
+function removeItemFromCart(id) {
+  userCart = userCart.filter(i => i.id !== id);
+  refreshCartView();
 }
 
-function updateCartUI() {
-  const count = cart.reduce((a, b) => a + b.qty, 0);
-  document.getElementById("cart-count").textContent = count > 0 ? `(${count})` : "";
-  const total = cart.reduce((a, b) => a + b.price * b.qty, 0);
-  document.getElementById("cart-total-price").textContent = `$${total.toFixed(2)}`;
-  const ci = document.getElementById("cart-items");
-  if (cart.length === 0) {
-    ci.innerHTML = '<div class="cart-empty">Your cart is empty.</div>';
+function refreshCartView() {
+  const totalItems = userCart.reduce((acc, curr) => acc + curr.count, 0);
+  document.getElementById("cart-count").textContent = totalItems > 0 ? `(${totalItems})` : "";
+  const totalPrice = userCart.reduce((acc, curr) => acc + curr.amount * curr.count, 0);
+  document.getElementById("cart-total-price").textContent = `$${totalPrice.toFixed(2)}`;
+  
+  const cartList = document.getElementById("cart-items");
+  if (userCart.length === 0) {
+    cartList.innerHTML = '<div class="cart-empty">Your cart is currently empty.</div>';
     return;
   }
-  ci.innerHTML = cart.map(x => `
+  
+  cartList.innerHTML = userCart.map(item => `
     <div class="cart-item">
-      <span class="cart-item-emoji">${x.emoji}</span>
+      <span class="cart-item-emoji">${item.icon}</span>
       <div class="cart-item-info">
-        <div class="name">${x.name}${x.qty > 1 ? ` x${x.qty}` : ""}</div>
-        <div class="price">$${(x.price * x.qty).toFixed(2)}</div>
+        <div class="name">${item.title}${item.count > 1 ? ` x${item.count}` : ""}</div>
+        <div class="price">$${(item.amount * item.count).toFixed(2)}</div>
       </div>
-      <button class="cart-item-remove" onclick="removeFromCart(${x.id})">✕</button>
+      <button class="cart-item-remove" onclick="removeItemFromCart(${item.id})">✕</button>
     </div>`).join("");
 }
 
-function toggleCart() {
+function toggleCartUI() {
   document.getElementById("cart-sidebar").classList.toggle("open");
   document.getElementById("cart-overlay").classList.toggle("open");
 }
 
-function checkout() {
-  if (cart.length === 0) return;
-  // Cart is NOT cleared anymore
-  toggleCart();
-  openCheckoutPopup();
+function startCheckout() {
+  if (userCart.length === 0) return;
+  toggleCartUI();
+  showCheckoutModal();
 }
 
-function loginWithDiscord() {
-  if (DISCORD_CLIENT_ID === "YOUR_CLIENT_ID") {
-    toast("Please set DISCORD_CLIENT_ID in app.js");
-    return;
-  }
-  const url = `https://discord.com/api/oauth2/authorize?client_id=${DISCORD_CLIENT_ID}&redirect_uri=${encodeURIComponent(DISCORD_REDIRECT_URI)}&response_type=token&scope=identify`;
-  window.location.href = url;
-}
-
-async function handleDiscordAuth() {
-  const fragment = new URLSearchParams(window.location.hash.slice(1));
-  const accessToken = fragment.get("access_token");
-
-  if (accessToken) {
-    try {
-      const response = await fetch('https://discord.com/api/users/@me', {
-        headers: { authorization: `Bearer ${accessToken}` }
-      });
-      const user = await response.json();
-      if (user.id) {
-        currentUser = user;
-        localStorage.setItem("os_discord_user", JSON.stringify(user));
-        history.replaceState(null, null, " ");
-        updateAuthUI();
-        toast(`Welcome, ${user.username}!`);
-      }
-    } catch (e) {
-      console.error(e);
-      toast("Discord Login failed.");
-    }
-  }
-}
-
-function updateAuthUI() {
-  const btn = document.getElementById("discord-user-name");
-  if (currentUser) {
-    btn.textContent = currentUser.username;
-    // Optional: Add avatar from https://cdn.discordapp.com/avatars/${currentUser.id}/${currentUser.avatar}.png
-  }
-}
-
-function openCheckoutPopup() {
+// Auth functionality (placeholder/simplified)
+function showCheckoutModal() {
   document.getElementById("checkout-popup").classList.add("open");
 }
 
-function closeCheckoutPopup() {
+function hideCheckoutModal() {
   document.getElementById("checkout-popup").classList.remove("open");
 }
 
-function updateProfileUI() {
-  if (!currentUser) {
+function refreshProfileView() {
+  if (!userState) {
     document.getElementById("profile-name-display").textContent = "Guest";
-    document.getElementById("profile-email-display").textContent = "Not connected to Discord";
+    document.getElementById("profile-email-display").textContent = "Login required";
     document.getElementById("profile-avatar-big").textContent = "?";
     return;
   }
-  document.getElementById("profile-name-display").textContent = currentUser.username;
-  document.getElementById("profile-email-display").textContent = `ID: ${currentUser.id}`;
-  document.getElementById("profile-avatar-big").textContent = currentUser.username[0].toUpperCase();
+  document.getElementById("profile-name-display").textContent = userState.username;
+  document.getElementById("profile-email-display").textContent = `UID: ${userState.id}`;
+  document.getElementById("profile-avatar-big").textContent = userState.username.charAt(0).toUpperCase();
 }
 
-function openAdminCodeModal() {
+function triggerAdminAuth() {
   document.getElementById("admin-code-input").value = "";
   document.getElementById("admin-code-err").style.opacity = "0";
   document.getElementById("admin-code-modal").classList.add("open");
-  setTimeout(() => document.getElementById("admin-code-input").focus(), 100);
+  setTimeout(() => document.getElementById("admin-code-input").focus(), 150);
 }
 
-function verifyAdminCode() {
-  const val = document.getElementById("admin-code-input").value;
-  const err = document.getElementById("admin-code-err");
-  if (val === ADMIN_CODE) {
+function validateAdminAccess() {
+  const input = document.getElementById("admin-code-input").value;
+  const errorLabel = document.getElementById("admin-code-err");
+  if (input === ADMIN_CODE) {
     document.getElementById("admin-code-modal").classList.remove("open");
-    showPage("admin");
+    navigateTo("admin");
   } else {
-    err.style.opacity = "1";
+    errorLabel.style.opacity = "1";
     document.getElementById("admin-code-input").value = "";
     document.getElementById("admin-code-input").focus();
   }
 }
 
-function addProduct() {
-  const name = document.getElementById("admin-name").value.trim();
-  const price = parseFloat(document.getElementById("admin-price").value);
-  const cat = document.getElementById("admin-cat").value;
-  const emoji = document.getElementById("admin-emoji").value || "📦";
-  const desc = document.getElementById("admin-desc").value.trim();
-  if (!name || isNaN(price) || price < 0 || !desc) {
-    toast("⚠️ Please fill all fields.");
+function createNewProduct() {
+  const title = document.getElementById("admin-name").value.trim();
+  const amount = parseFloat(document.getElementById("admin-price").value);
+  const category = document.getElementById("admin-cat").value;
+  const icon = document.getElementById("admin-emoji").value || "📦";
+  const details = document.getElementById("admin-desc").value.trim();
+
+  if (!title || isNaN(amount) || amount <= 0 || !details) {
+    showMessage("⚠️ Please fill all required fields correctly.");
     return;
   }
-  products.push({ id: Date.now(), name, price, cat, emoji, desc });
-  save();
-  renderAdminProducts();
-  renderProducts();
-  document.getElementById("admin-name").value = "";
-  document.getElementById("admin-price").value = "";
-  document.getElementById("admin-emoji").value = "";
-  document.getElementById("admin-desc").value = "";
-  toast(`✅ "${name}" added`);
+
+  const timestamp = Date.now();
+  shoppingItems.push({ 
+    id: timestamp, 
+    title, 
+    amount, 
+    category, 
+    icon, 
+    details, 
+    created_at: timestamp 
+  });
+
+  persistData();
+  refreshAdminView();
+  displayProducts();
+  
+  // Clear inputs
+  ["admin-name", "admin-price", "admin-emoji", "admin-desc"].forEach(id => {
+    document.getElementById(id).value = "";
+  });
+  
+  showMessage(`✅ "${title}" successfully created`);
 }
 
-function deleteProduct(id) {
-  if (!confirm("Really delete product?")) return;
-  products = products.filter(p => p.id !== id);
-  save();
-  renderAdminProducts();
-  renderProducts();
-  toast("🗑️ Product deleted");
+function removeProduct(id) {
+  if (!confirm("Are you sure you want to remove this item?")) return;
+  shoppingItems = shoppingItems.filter(i => i.id !== id);
+  persistData();
+  refreshAdminView();
+  displayProducts();
+  showMessage("🗑️ Item removed");
 }
 
-function renderAdminProducts() {
-  document.getElementById("admin-count").textContent = products.length;
-  const list = document.getElementById("admin-products-list");
-  if (products.length === 0) {
-    list.innerHTML = '<div class="order-empty">No products found.</div>';
+function refreshAdminView() {
+  document.getElementById("admin-count").textContent = shoppingItems.length;
+  const listEl = document.getElementById("admin-products-list");
+  
+  if (shoppingItems.length === 0) {
+    listEl.innerHTML = '<div class="order-empty">No products in database.</div>';
     return;
   }
-  list.innerHTML = products.map(p => `
+  
+  listEl.innerHTML = shoppingItems.map(item => `
     <div class="admin-product-item">
       <div class="info">
-        <span style="font-size:1.6rem;">${p.emoji}</span>
+        <span style="font-size:1.6rem;">${item.icon}</span>
         <div class="info-text">
-          <span>${p.name}</span>
-          <span>$${p.price.toFixed(2)} · ${p.cat} · ${p.desc.substring(0, 45)}${p.desc.length > 45 ? "..." : ""}</span>
+          <span>${item.title}</span>
+          <span>$${item.amount.toFixed(2)} · ${item.category}</span>
         </div>
       </div>
-      <button class="delete-btn" onclick="deleteProduct(${p.id})">Delete</button>
+      <button class="delete-btn" onclick="removeProduct(${item.id})">Delete</button>
     </div>`).join("");
 }
 
-function toast(msg) {
-  const t = document.getElementById("toast");
-  t.textContent = msg;
-  t.classList.add("show");
-  setTimeout(() => t.classList.remove("show"), 2500);
+function showMessage(msg) {
+  const el = document.getElementById("toast");
+  el.textContent = msg;
+  el.classList.add("show");
+  setTimeout(() => el.classList.remove("show"), 3000);
 }
 
-// Admin Routing via URL hash
-function handleRouting() {
-  const hash = window.location.hash;
-  if (hash === "#/admin" || hash === "#admin") {
-    openAdminCodeModal();
+function initApp() {
+  const currentPath = window.location.hash;
+  if (currentPath.includes("admin")) {
+    triggerAdminAuth();
   }
+  displayProducts();
+  refreshCartView();
 }
 
-window.addEventListener("hashchange", handleRouting);
-window.addEventListener("load", handleRouting);
-
-handleDiscordAuth();
-updateAuthUI();
-renderProducts();
-updateCartUI();
+window.addEventListener("hashchange", initApp);
+window.addEventListener("load", initApp);

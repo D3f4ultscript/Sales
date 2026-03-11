@@ -9,39 +9,31 @@
 <body>
 
 <nav>
-  <div class="nav-logo">OnlyShop</div>
+  <div class="nav-logo"><span class="accent-text">D3f4ult</span> Shop</div>
   <button class="nav-burger" id="nav-burger" onclick="toggleMobileMenu()">☰</button>
   <div class="nav-links" id="nav-links">
-    <a href="#" onclick="showPage('shop');closeMobileMenu()">Shop</a>
-    <a href="#" onclick="showPage('shop');closeMobileMenu()">Deals</a>
-    <a href="#" onclick="showPage('shop');closeMobileMenu()">New</a>
+    <a href="#" onclick="navigateTo('shop');hideNav()">Shop</a>
   </div>
   <div class="nav-right">
-    <button id="cart-btn" onclick="toggleCart()">🛒 <span id="cart-count"></span></button>
-    <button id="discord-login-btn" class="discord-btn" onclick="loginWithDiscord()">
-      <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M20.317 4.37a19.791 19.791 0 0 0-4.885-1.515.074.074 0 0 0-.079.037c-.21.375-.444.864-.608 1.25a18.27 18.27 0 0 0-5.487 0 12.64 12.64 0 0 0-.617-1.25.077.077 0 0 0-.079-.037 19.736 19.736 0 0 0-4.885 1.515.069.069 0 0 0-.032.027C.533 9.048-.32 13.58.099 18.057a.082.082 0 0 0 .031.057 19.9 19.9 0 0 0 5.993 3.03.078.078 0 0 0 .084-.028 14.09 14.09 0 0 0 1.226-1.994.076.076 0 0 0-.041-.106 13.107 13.107 0 0 1-1.872-.892.077.077 0 0 1-.008-.128 10.2 10.2 0 0 0 .372-.292.074.074 0 0 1 .077-.01c3.928 1.793 8.18 1.793 12.062 0a.074.074 0 0 1 .078.01c.12.098.246.198.373.292a.077.077 0 0 1-.006.127 12.299 12.299 0 0 1-1.873.892.077.077 0 0 0-.041.107c.36.698.772 1.362 1.225 1.993a.076.076 0 0 0 .084.028 19.839 19.839 0 0 0 6.002-3.03.077.077 0 0 0 .032-.054c.5-5.177-.838-9.674-3.549-13.66a.061.061 0 0 0-.031-.03zM8.02 15.33c-1.183 0-2.157-1.085-2.157-2.419 0-1.333.955-2.419 2.157-2.419 1.21 0 2.176 1.096 2.157 2.42 0 1.333-.956 2.418-2.157 2.418zm7.975 0c-1.183 0-2.157-1.085-2.157-2.419 0-1.333.955-2.419 2.157-2.419 1.21 0 2.176 1.096 2.157 2.42 0 1.333-.946 2.418-2.157 2.418z"/></svg>
-      <span id="discord-user-name">Connect with Discord</span>
-    </button>
+    <button id="cart-btn" onclick="toggleCartUI()">🛒 <span id="cart-count"></span></button>
   </div>
 </nav>
 
 <div id="shop-page" class="page active">
   <div id="hero">
-    <h1>Your Premium<br/><span>Only Shop</span></h1>
+    <h1>Your Premium<br/><span class="accent-text">D3f4ult Shop</span></h1>
     <p>Exclusive products, first-class quality – direct to you.</p>
   </div>
   <div class="shop-controls">
     <div class="search-wrap">
       <span class="si">🔍</span>
-      <input type="text" id="search-input" placeholder="Search products..." oninput="renderProducts()"/>
+      <input type="text" id="search-input" placeholder="Search products..." oninput="displayProducts()"/>
     </div>
     <div class="filter-group" id="filter-group">
-      <button class="filter-btn active" onclick="setFilter(this,'all')">All</button>
-      <button class="filter-btn" onclick="setFilter(this,'digital')">Digital</button>
-      <button class="filter-btn" onclick="setFilter(this,'physical')">Physical</button>
-      <button class="filter-btn" onclick="setFilter(this,'premium')">Premium</button>
+      <button class="filter-btn active" onclick="updateFilter(this,'all')">All</button>
+      <button class="filter-btn" onclick="updateFilter(this,'new')">New</button>
     </div>
-    <select class="sort-select" id="sort-select" onchange="renderProducts()">
+    <select class="sort-select" id="sort-select" onchange="displayProducts()">
       <option value="default">Sort</option>
       <option value="price-asc">Price ↑</option>
       <option value="price-desc">Price ↓</option>
@@ -88,14 +80,14 @@
       <div class="form-group"><label>Emoji</label><input type="text" id="admin-emoji" placeholder="🎁" maxlength="2"/></div>
     </div>
     <div class="form-group"><label>Description</label><input type="text" id="admin-desc" placeholder="Short description..."/></div>
-    <button class="btn-primary" style="width:auto;padding:10px 32px;" onclick="addProduct()">Add Product</button>
+    <button class="btn-primary" style="width:auto;padding:10px 32px;" onclick="createNewProduct()">Add Product</button>
   </div>
   <div class="profile-section">
     <h3>All Products (<span id="admin-count">0</span>)</h3>
     <div class="admin-products-list" id="admin-products-list"></div>
   </div>
   <div style="margin-top:40px;text-align:center;">
-    <button class="admin-btn" onclick="showPage('shop')">← Back to Shop</button>
+    <button class="admin-btn" onclick="navigateTo('shop')">← Back to Shop</button>
   </div>
 </div>
 
@@ -104,24 +96,24 @@
     <button class="modal-close" onclick="document.getElementById('admin-code-modal').classList.remove('open')">✕</button>
     <h2 class="gradient-text">Administration</h2>
     <p class="muted" style="margin-bottom:24px;">Enter Admin Code to continue</p>
-    <div class="form-group" style="text-align:left;"><label>Admin Code</label><input type="password" id="admin-code-input" placeholder="••••••" onkeydown="if(event.key==='Enter')verifyAdminCode()"/></div>
+    <div class="form-group" style="text-align:left;"><label>Admin Code</label><input type="password" id="admin-code-input" placeholder="••••••" onkeydown="if(event.key==='Enter')validateAdminAccess()"/></div>
     <div class="form-err" id="admin-code-err" style="display:block;opacity:0;margin-bottom:12px;">Wrong code.</div>
-    <button class="btn-primary" onclick="verifyAdminCode()">Confirm</button>
+    <button class="btn-primary" onclick="validateAdminAccess()">Confirm</button>
   </div>
 </div>
 
 <div id="cart-sidebar">
   <div class="cart-header">
     <h3>🛒 Shopping Cart</h3>
-    <button class="cart-close" onclick="toggleCart()">✕</button>
+    <button class="cart-close" onclick="toggleCartUI()">✕</button>
   </div>
   <div class="cart-items" id="cart-items"></div>
   <div class="cart-footer">
     <div class="cart-total"><span>Total</span><span id="cart-total-price">$0.00</span></div>
-    <button class="btn-primary" onclick="checkout()">Checkout</button>
+    <button class="btn-primary" onclick="startCheckout()">Checkout</button>
   </div>
 </div>
-<div id="cart-overlay" onclick="toggleCart()"></div>
+<div id="cart-overlay" onclick="toggleCartUI()"></div>
 
 <div id="toast"></div>
 

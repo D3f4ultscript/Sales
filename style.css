@@ -17,6 +17,7 @@ body { background: var(--bg); color: var(--text); font-family: 'Segoe UI', syste
 
 .muted { color: var(--muted); }
 .small { font-size: 0.8rem; }
+.accent-text { background: linear-gradient(135deg, var(--accent), var(--accent2)); background-clip: text; -webkit-background-clip: text; -webkit-text-fill-color: transparent; font-weight: 900; }
 .gradient-text { background: linear-gradient(135deg, var(--accent), var(--accent2)); background-clip: text; -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
 
 nav {
@@ -26,7 +27,7 @@ nav {
   display: flex; align-items: center; justify-content: space-between;
   padding: 0 24px; height: var(--nav-h); gap: 16px;
 }
-.nav-logo { font-size: 1.4rem; font-weight: 900; background: linear-gradient(135deg, var(--accent), var(--accent2)); background-clip: text; -webkit-background-clip: text; -webkit-text-fill-color: transparent; white-space: nowrap; flex-shrink: 0; }
+.nav-logo { font-size: 1.4rem; font-weight: 900; color: #fff; white-space: nowrap; flex-shrink: 0; }
 .nav-links { display: flex; gap: 20px; align-items: center; }
 .nav-links a { color: var(--muted); text-decoration: none; font-size: 0.92rem; transition: color .2s; white-space: nowrap; }
 .nav-links a:hover { color: var(--text); }
