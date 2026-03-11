@@ -360,8 +360,10 @@ function refreshAdminView() {
 function showMessage(msg) {
   const el = document.getElementById("toast");
   el.textContent = msg;
+  el.classList.remove("show");
+  void el.offsetWidth; // Trigger reflow
   el.classList.add("show");
-  setTimeout(() => el.classList.remove("show"), 3000);
+  setTimeout(() => el.classList.remove("show"), 3500);
 }
 
 function initApp() {

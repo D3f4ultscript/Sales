@@ -74,7 +74,7 @@ nav {
 
 .products-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: 20px; padding: 0 24px 64px; }
 .product-card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); overflow: hidden; transition: all .3s cubic-bezier(0.4, 0, 0.2, 1); cursor: pointer; position: relative; }
-.product-card:hover { transform: translateY(-8px); shadow: 0 12px 30px rgba(0,0,0,0.5); border-color: var(--accent); }
+.product-card:hover { transform: translateY(-8px); box-shadow: 0 12px 30px rgba(0,0,0,0.5); border-color: var(--accent); }
 .product-img { width: 100%; aspect-ratio: 4/3; background: linear-gradient(135deg, #1e1e1e, #2a2a2a); display: flex; align-items: center; justify-content: center; position: relative; overflow: hidden; }
 .product-img::after { content: ''; position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: radial-gradient(circle at 50% 50%, rgba(233,30,140,0.1), transparent 70%); }
 .product-body { padding: 18px; }
@@ -341,3 +341,271 @@ body {
 .fade-in {
   animation: fadeIn 0.4s ease-out forwards;
 }
+
+/* ============ ENHANCED ANIMATIONS ============ */
+
+/* Fade In on Load */
+@keyframes slideInFromTop {
+  from { opacity: 0; transform: translateY(-20px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes slideInFromBottom {
+  from { opacity: 0; transform: translateY(20px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes slideInFromLeft {
+  from { opacity: 0; transform: translateX(-20px); }
+  to { opacity: 1; transform: translateX(0); }
+}
+
+@keyframes slideInFromRight {
+  from { opacity: 0; transform: translateX(20px); }
+  to { opacity: 1; transform: translateX(0); }
+}
+
+/* Glow Effect */
+@keyframes glowPulse {
+  0%, 100% { box-shadow: 0 0 5px rgba(233, 30, 140, 0.2), 0 0 10px rgba(233, 30, 140, 0.1); }
+  50% { box-shadow: 0 0 15px rgba(233, 30, 140, 0.4), 0 0 20px rgba(233, 30, 140, 0.2); }
+}
+
+/* Shimmer Loading Effect */
+@keyframes shimmer {
+  0% { background-position: -1000px 0; }
+  100% { background-position: 1000px 0; }
+}
+
+/* Scale & Float */
+@keyframes floatingAnimation {
+  0%, 100% { transform: translateY(0px); }
+  50% { transform: translateY(-8px); }
+}
+
+/* Input Focus Glow */
+input:focus, select:focus, textarea:focus {
+  outline: none;
+  border-color: var(--accent) !important;
+  box-shadow: 0 0 12px rgba(233, 30, 140, 0.3) !important;
+  transition: all 0.3s ease;
+}
+
+/* Button Animations */
+.btn-primary {
+  position: relative;
+}
+
+.btn-primary::before {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 0;
+  height: 0;
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 50%;
+  transform: translate(-50%, -50%);
+  transition: width 0.6s, height 0.6s;
+  pointer-events: none;
+}
+
+.btn-primary:active::before {
+  width: 300px;
+  height: 300px;
+}
+
+/* Modal Smooth Entrance */
+.modal-overlay {
+  animation: fadeIn 0.3s ease-out;
+}
+
+.modal {
+  animation: slideInFromBottom 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+/* Product Card Staggered Animation */
+.product-card {
+  animation: slideInFromBottom 0.6s ease-out;
+}
+
+.product-card:nth-child(1) { animation-delay: 0.05s; }
+.product-card:nth-child(2) { animation-delay: 0.1s; }
+.product-card:nth-child(3) { animation-delay: 0.15s; }
+.product-card:nth-child(n+4) { animation-delay: 0.2s; }
+
+/* Hover Lift Effect on Cards */
+.product-card::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: var(--accent);
+  opacity: 0;
+  transition: opacity 0.3s ease;
+  border-radius: 12px;
+  z-index: -1;
+}
+
+.product-card:hover::before {
+  opacity: 0.1;
+}
+
+/* Cart Item Animation */
+.cart-item {
+  animation: slideInFromRight 0.4s ease-out;
+}
+
+/* Search & Filter Animation */
+.search-wrap {
+  animation: slideInFromTop 0.5s ease-out;
+}
+
+.filter-group {
+  animation: slideInFromTop 0.5s ease-out 0.1s both;
+}
+
+.sort-select-wrap {
+  animation: slideInFromTop 0.5s ease-out 0.2s both;
+}
+
+/* Hero Section Animation */
+#hero {
+  animation: slideInFromTop 0.7s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+#hero h1 {
+  animation: slideInFromTop 0.8s cubic-bezier(0.34, 1.56, 0.64, 1) 0.1s both;
+}
+
+#hero p {
+  animation: slideInFromTop 0.8s cubic-bezier(0.34, 1.56, 0.64, 1) 0.2s both;
+}
+
+/* Legal Box Entrance */
+.legal-box {
+  animation: slideInFromBottom 0.6s ease-out;
+}
+
+.legal-box h2 {
+  animation: slideInFromLeft 0.6s ease-out;
+}
+
+.legal-box h3 {
+  animation: slideInFromLeft 0.6s ease-out;
+}
+
+/* Info Container Animation */
+.info-container {
+  animation: slideInFromBottom 0.6s ease-out;
+}
+
+/* Navigation Smooth Transitions */
+nav {
+  animation: slideInFromTop 0.4s ease-out;
+}
+
+.nav-logo {
+  animation: slideInFromLeft 0.5s ease-out;
+}
+
+.nav-item {
+  animation: slideInFromTop 0.5s ease-out;
+}
+
+.nav-item:nth-child(1) { animation-delay: 0.05s; }
+.nav-item:nth-child(2) { animation-delay: 0.1s; }
+
+/* Cart Button Animation */
+#cart-btn {
+  animation: slideInFromRight 0.5s ease-out;
+}
+
+/* Add to Cart Ripple Effect */
+.add-cart-btn {
+  position: relative;
+  overflow: hidden;
+}
+
+.add-cart-btn::after {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 0;
+  height: 0;
+  background: rgba(255, 255, 255, 0.3);
+  border-radius: 50%;
+  transform: translate(-50%, -50%);
+  transition: width 0.5s, height 0.5s;
+  pointer-events: none;
+}
+
+.add-cart-btn:active::after {
+  width: 200px;
+  height: 200px;
+}
+
+/* Smooth Page Transitions */
+.page {
+  animation: fadeIn 0.5s ease-out forwards;
+}
+
+/* Active Footer Link Animation */
+.footer-link {
+  position: relative;
+  padding-bottom: 3px;
+}
+
+.footer-link::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 0;
+  height: 1px;
+  background: var(--accent);
+  transition: width 0.3s ease;
+}
+
+.footer-link:hover::after {
+  width: 100%;
+}
+
+/* Smooth Scroll Behavior */
+@media (prefers-reduced-motion: no-preference) {
+  html {
+    scroll-behavior: smooth;
+  }
+}
+
+/* Cart Sidebar Slide Animation */
+#cart-sidebar {
+  animation: slideInFromRight 0.3s ease-out;
+}
+
+#cart-overlay {
+  animation: fadeIn 0.3s ease-out;
+}
+
+/* Icon Picker Animation */
+.icon-option {
+  animation: slideInFromBottom 0.4s ease-out;
+}
+
+.icon-option:nth-child(1) { animation-delay: 0.05s; }
+.icon-option:nth-child(2) { animation-delay: 0.1s; }
+.icon-option:nth-child(3) { animation-delay: 0.15s; }
+.icon-option:nth-child(n+4) { animation-delay: 0.2s; }
+
+/* Smooth Focus States */
+.form-group input,
+.form-group select,
+.form-group textarea {
+  transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+/* Message Toast Animation */
+#toast {
+  animation: slideInFromBottom 0.4s ease-out;
+}
+
