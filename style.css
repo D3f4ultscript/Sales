@@ -183,3 +183,45 @@ nav {
   .filter-group { gap: 6px; }
   .filter-btn { padding: 6px 10px; font-size: 0.78rem; }
 }
+
+/* Icon Picker */
+.icon-picker-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(40px, 1fr));
+  gap: 8px;
+  background: rgba(255,255,255,0.03);
+  padding: 12px;
+  border-radius: 8px;
+  border: 1px solid rgba(255,255,255,0.05);
+  max-height: 120px;
+  overflow-y: auto;
+  margin-top: 5px;
+}
+
+.icon-option {
+  width: 40px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(255,255,255,0.05);
+  border-radius: 6px;
+  cursor: pointer;
+  transition: all 0.2s;
+  border: 2px solid transparent;
+}
+
+.icon-option:hover {
+  background: rgba(255,255,255,0.1);
+}
+
+.icon-option.selected {
+  border-color: var(--accent);
+  background: rgba(233, 30, 140, 0.1);
+}
+
+.icon-option i {
+  width: 20px;
+  height: 20px;
+  color: #fff;
+}

@@ -27,7 +27,7 @@
 
 <div id="shop-page" class="page active">
   <div id="hero">
-    <h1>Your Premium<br/><span class="accent-text">D3f4ult Shop</span></h1>
+    <h1><span class="accent-text">D3f4ult Shop</span></h1>
     <p>Exclusive products, first-class quality – direct to you.</p>
   </div>
   <div class="shop-controls">
@@ -108,16 +108,11 @@
         </select>
       </div>
       <div class="form-group">
-        <label>Icon Group</label>
-        <select id="admin-emoji" class="sort-select" style="width:100%;padding:10px 14px;">
-          <option value="package">Package</option>
-          <option value="box">Box</option>
-          <option value="file-digit">Digital File</option>
-          <option value="hard-drive">Hardware</option>
-          <option value="star">Premium Star</option>
-          <option value="gift">Gift</option>
-          <option value="zap">Fast Delivery</option>
-        </select>
+        <label>Select Icon</label>
+        <div id="icon-picker-grid" class="icon-picker-grid">
+          <!-- Populated by JS -->
+        </div>
+        <input type="hidden" id="admin-emoji" value="package">
       </div>
     </div>
     <div class="form-group"><label>Description</label><input type="text" id="admin-desc" placeholder="Short description..."/></div>
@@ -162,7 +157,7 @@
 
 <div class="modal-overlay" id="checkout-popup">
   <div class="modal" style="max-width:420px;text-align:center;">
-    <button class="modal-close" onclick="closeCheckoutPopup()">✕</button>
+    <button class="modal-close" onclick="hideCheckoutModal()">✕</button>
     <h2>Almost there! 🚀</h2>
     <p class="muted" style="margin:12px 0 24px;">To complete your purchase, please join my Discord. You will find all payment and product info there.</p>
     <a id="discord-link" class="btn-primary" href="#" target="_blank" rel="noopener noreferrer">Buy on Discord</a>

@@ -258,6 +258,29 @@ function validateAdminAccess() {
   }
 }
 
+function renderIconPicker() {
+  const icons = [
+    "package", "zap", "star", "gift", "lock", "shield", "trophy", "crown", 
+    "gamepad-2", "cpu", "coffee", "heart", "hard-drive", "file-digit", "box", 
+    "key", "database", "code", "terminal", "activity", "layers", "shopping-cart"
+  ];
+  const container = document.getElementById("icon-picker-grid");
+  const hiddenInput = document.getElementById("admin-emoji");
+  if (!container) return;
+
+  container.innerHTML = icons.map(icon => `
+    <div class="icon-option ${hiddenInput.value === icon ? 'selected' : ''}" onclick="selectIcon('${icon}')">
+      <i data-lucide="${icon}"></i>
+    </div>
+  `).join("");
+  lucide.createIcons();
+}
+
+function selectIcon(icon) {
+  document.getElementById("admin-emoji").value = icon;
+  renderIconPicker();
+}
+
 function createNewProduct() {
   const title = document.getElementById("admin-name").value.trim();
   const amount = parseFloat(document.getElementById("admin-price").value);
@@ -303,6 +326,7 @@ function removeProduct(id) {
 }
 
 function refreshAdminView() {
+  renderIconPicker();
   document.getElementById("admin-count").textContent = shoppingItems.length;
   const listEl = document.getElementById("admin-products-list");
   
