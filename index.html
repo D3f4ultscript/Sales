@@ -155,13 +155,56 @@
 
 <div id="toast"></div>
 
-<div class="modal-overlay" id="checkout-popup">
+<div id="checkout-popup" class="modal-overlay">
   <div class="modal" style="max-width:420px;text-align:center;">
     <button class="modal-close" onclick="hideCheckoutModal()">✕</button>
     <h2>Almost there! 🚀</h2>
     <p class="muted" style="margin:12px 0 24px;">To complete your purchase, please join my Discord. You will find all payment and product info there.</p>
     <a id="discord-link" class="btn-primary" href="#" target="_blank" rel="noopener noreferrer">Buy on Discord</a>
     <p class="muted small" style="margin-top:12px;">Your cart is saved.</p>
+  </div>
+</div>
+
+<footer class="site-footer">
+  <div class="footer-links">
+    <a href="#" class="footer-link" onclick="navigateTo('imprint')">Imprint</a>
+    <a href="#" class="footer-link" onclick="navigateTo('privacy')">Privacy Policy</a>
+  </div>
+  <p class="muted small">&copy; 2024 D3f4ult Shop. All rights reserved.</p>
+</footer>
+
+<div id="imprint-page" class="page">
+  <div class="legal-box">
+    <h2 class="gradient-text">Imprint</h2>
+    <p><strong>D3f4ult Shop</strong></p>
+    <p>Owner: [Your Name]<br>
+    Street: [Your Street]<br>
+    City: [Zip Code, City]<br>
+    Country: [Country]</p>
+    
+    <h3>Contact</h3>
+    <p>Email: [Your@Email.com]<br>
+    Discord: [Your Discord ID]</p>
+    
+    <h3>Dispute Resolution</h3>
+    <p>The European Commission provides a platform for online dispute resolution (OS): <a href="https://ec.europa.eu/consumers/odr" target="_blank">https://ec.europa.eu/consumers/odr</a>. We are not obliged or willing to participate in dispute resolution proceedings before a consumer arbitration board.</p>
+  </div>
+</div>
+
+<div id="privacy-page" class="page">
+  <div class="legal-box">
+    <h2 class="gradient-text">Privacy Policy</h2>
+    <h3>1. Data Protection at a Glance</h3>
+    <p>The following information provides a simple overview of what happens to your personal data when you visit this website. This site runs as a static frontend and only uses LocalStorage to save your cart locally on your device.</p>
+    
+    <h3>2. Data Collection</h3>
+    <p>We do not collect personal data through this website. All checkout processes are handled externally via Discord.</p>
+    
+    <h3>3. Cookies & LocalStorage</h3>
+    <p>We use the browser's LocalStorage to store your shopping cart items so you don't lose them when refreshing the page. No tracking cookies are used.</p>
+    
+    <h3>4. Third-Party Services</h3>
+    <p>We use Lucide Icons and Google Fonts/CDN services which might log your IP address for technical reasons when loading their assets.</p>
   </div>
 </div>
 

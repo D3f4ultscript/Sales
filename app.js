@@ -15,8 +15,14 @@ function isItemRecent(item) {
 }
 
 function navigateTo(pageId) {
-  document.querySelectorAll(".page").forEach(el => el.classList.remove("active"));
-  document.getElementById(pageId + "-page").classList.add("active");
+  document.querySelectorAll(".page").forEach(el => el.style.display = "none");
+  const target = document.getElementById(pageId + "-page");
+  if (target) {
+    target.style.display = "block";
+    target.classList.remove("fade-in");
+    void target.offsetWidth; // Trigger reflow
+    target.classList.add("fade-in");
+  }
   
   // Update nav link styles
   document.querySelectorAll(".nav-item").forEach(link => {
